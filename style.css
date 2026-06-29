@@ -34,6 +34,11 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+html {
+    overflow-x: hidden;
+    width: 100%;
+}
+
 body {
     background-color: var(--bg-dark);
     color: var(--text-primary);
@@ -62,7 +67,7 @@ button, select, label, input, textarea, a, .history-item-main {
 
 /* Background animated glow orbs */
 .bg-blur {
-    position: absolute;
+    position: fixed;
     width: 600px;
     height: 600px;
     border-radius: 50%;
@@ -1090,7 +1095,8 @@ button, select, label, input, textarea, a, .history-item-main {
     background: rgba(4, 6, 10, 0.4);
     border: 1px solid var(--card-border);
     border-radius: var(--border-radius-md);
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .rests-table {
