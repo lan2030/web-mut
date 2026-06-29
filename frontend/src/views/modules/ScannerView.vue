@@ -80,8 +80,9 @@
         <div class="card-header"><h3><LucideIcon name="scan" /> Наведите код</h3>
           <button class="btn-icon" @click="stopScanning"><LucideIcon name="x" /></button>
         </div>
-        <div id="reader" class="reader"></div>
-        <div class="camera-controls">
+        <div v-if="camError" class="empty-state"><LucideIcon name="alert-circle" /><p>{{ camError }}</p></div>
+        <div id="reader" class="reader" v-show="!camError"></div>
+        <div class="camera-controls" v-show="!camError">
           <select v-model="selectedCamera" class="camera-select">
             <option v-for="c in cameras" :key="c.id" :value="c.id">{{ c.label }}</option>
           </select>
@@ -105,6 +106,7 @@ const statusText = ref('Готов');
 
 const modalOpen = ref(false);
 const active = ref(false);
+const camError = ref('');
 const cameras = ref([{ id: 'environment', label: 'Задняя камера (авто)' }, { id: 'user', label: 'Фронтальная (авто)' }]);
 const selectedCamera = ref('environment');
 let qr = null;
@@ -125,8 +127,34 @@ async function refreshCameras() {
   } catch { /* permission not granted yet — keep defaults */ }
 }
 
+function cameraErrorMessage(err) {
+  // Camera (getUserMedia) is only available in a secure context: HTTPS or localhost.
+  if (!window.isSecureContext || !navigator.mediaDevices) {
+    return 'Камера недоступна: страница открыта по HTTP. Нужен HTTPS (защищённое соединение).';
+  }
+  switch (err?.name) {
+    case 'NotAllowedError':
+    case 'SecurityError':
+      return 'Доступ к камере запрещён. Разрешите камеру в настройках браузера.';
+    case 'NotFoundError':
+    case 'OverconstrainedError':
+      return 'Камера не найдена на устройстве.';
+    case 'NotReadableError':
+      return 'Камера занята другим приложением.';
+    default:
+      return `Ошибка камеры: ${err?.message || err?.name || 'неизвестно'}`;
+  }
+}
+
 async function startScanning() {
+  camError.value = '';
   if (!window.Html5Qrcode) { statusText.value = 'Нет библиотеки'; return; }
+  if (!window.isSecureContext || !navigator.mediaDevices) {
+    camError.value = cameraErrorMessage();
+    statusText.value = 'Нужен HTTPS';
+    modalOpen.value = true;
+    return;
+  }
   modalOpen.value = true;
   await nextTick(); // wait for #reader to be rendered before html5-qrcode binds to it
   ensureQr();
@@ -137,9 +165,10 @@ async function startScanning() {
     active.value = true;
     statusText.value = 'Сканирование';
     if (cameras.value.length <= 2) await refreshCameras();
-  } catch {
+  } catch (err) {
+    console.error('Camera start failed:', err);
+    camError.value = cameraErrorMessage(err);
     statusText.value = 'Ошибка камеры';
-    modalOpen.value = false;
   }
 }
 
