@@ -15,6 +15,12 @@ const routes = [
         meta: { permission: 'module:scanner' },
       },
       {
+        path: 'admin',
+        name: 'admin',
+        component: () => import('@/views/admin/AdminView.vue'),
+        meta: { anyPermission: ['admin:users', 'admin:roles'] },
+      },
+      {
         path: 'admin/users',
         name: 'admin-users',
         component: () => import('@/views/admin/UsersView.vue'),
@@ -45,6 +51,9 @@ router.beforeEach(async (to) => {
     return { name: 'login', query: { redirect: to.fullPath } };
   }
   if (to.meta.permission && !auth.can(to.meta.permission)) {
+    return { name: 'forbidden' };
+  }
+  if (to.meta.anyPermission && !to.meta.anyPermission.some((p) => auth.can(p))) {
     return { name: 'forbidden' };
   }
   return true;

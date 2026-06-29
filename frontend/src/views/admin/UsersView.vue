@@ -1,7 +1,10 @@
 <template>
   <div class="admin-page">
     <div class="card-header">
-      <h2><LucideIcon name="users" /> Пользователи</h2>
+      <div class="header-left">
+        <router-link to="/admin" class="btn-icon" title="К администрированию"><LucideIcon name="arrow-left" /></router-link>
+        <h2><LucideIcon name="users" /> Пользователи</h2>
+      </div>
       <button class="btn btn-primary" @click="openCreate"><LucideIcon name="user-plus" /> Добавить</button>
     </div>
 

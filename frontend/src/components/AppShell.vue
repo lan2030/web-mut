@@ -9,21 +9,6 @@
         </div>
       </router-link>
 
-      <nav class="top-nav">
-        <router-link
-          v-if="auth.can('admin:users')"
-          to="/admin/users"
-          class="nav-link"
-          active-class="active"
-        ><LucideIcon name="users" /> Пользователи</router-link>
-        <router-link
-          v-if="auth.can('admin:roles')"
-          to="/admin/roles"
-          class="nav-link"
-          active-class="active"
-        ><LucideIcon name="shield" /> Роли</router-link>
-      </nav>
-
       <div class="user-area">
         <span class="user-name">{{ auth.user?.full_name || auth.user?.username }}</span>
         <button class="btn-icon" title="Выйти" @click="onLogout"><LucideIcon name="log-out" /></button>
