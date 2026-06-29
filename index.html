@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="A premium, fast, and secure QR code and barcode scanner application operating directly in your browser.">
+    <title>OmniScan - Premium Barcode & QR Code Scanner</title>
+    <!-- Mobile PWA Meta -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="OmniScan">
+    <meta name="theme-color" content="#080b11">
+    <link rel="manifest" href="manifest.json">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- HTML5-QRCode Library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css?v=5">
+    <!-- Custom Script -->
+    <script src="app.js?v=5" defer></script>
+</head>
+<body>
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i data-lucide="qr-code"></i>
+                </div>
+                <div>
+                    <h1>OmniScan</h1>
+                    <p class="subtitle">Next-Gen Scanner</p>
+                </div>
+            </div>
+            <div class="status-badge" id="scannerStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Ready</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Side: Scanner Controls -->
+            <section class="card scanner-card">
+                <div class="card-header">
+                    <h2><i data-lucide="aperture"></i> Scan Codes</h2>
+                </div>
+                <div class="scanner-actions">
+                    <button class="btn btn-primary" id="startBtn">
+                        <i data-lucide="camera"></i> Start Scanner
+                    </button>
+                    
+                    <div class="file-upload-wrapper">
+                        <label for="imageUpload" class="btn btn-secondary">
+                            <i data-lucide="image"></i> Scan from File
+                        </label>
+                        <input type="file" id="imageUpload" accept="image/*">
+                        <p class="file-info" id="fileInfo">Drag and drop or browse image</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scanner Modal Overlay -->
+            <div class="modal-overlay" id="scannerModal" style="display: none;">
+                <div class="modal-card">
+                    <div class="modal-header">
+                        <h3><i data-lucide="scan"></i> Align code inside scanner</h3>
+                        <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close Scanner">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div class="scanner-viewport-container">
+                        <div id="reader" style="width: 100%; border: none;"></div>
+                        
+                        <!-- Scanning Overlay (Visible only when scanning) -->
+                        <div class="scanner-overlay" id="scannerOverlay">
+                            <div class="scan-laser"></div>
+                            <div class="corner-border top-left"></div>
+                            <div class="corner-border top-right"></div>
+                            <div class="corner-border bottom-left"></div>
+                            <div class="corner-border bottom-right"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="camera-controls-row">
+                            <div class="camera-select-wrapper">
+                                <select id="cameraSelect" aria-label="Select Camera">
+                                    <option value="">Detecting cameras...</option>
+                                </select>
+                            </div>
+                            <button class="btn-icon" id="switchCameraBtn" title="Switch Camera" style="display: none;">
+                                <i data-lucide="switch-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Scanned Results -->
+            <div class="sidebar-grid">
+                <section class="card result-card" id="resultCard">
+                    <div class="card-header">
+                        <h2><i data-lucide="file-text"></i> Scanned Result</h2>
+                        <span class="badge" id="resultType">None</span>
+                    </div>
+                    
+                    <div class="result-placeholder" id="resultPlaceholder">
+                        <i data-lucide="scan-face"></i>
+                        <p>Awaiting scan result...</p>
+                    </div>
+
+                    <div class="result-content" id="resultContent" style="display: none;">
+                        <div class="result-text-container">
+                            <textarea id="resultText" readonly aria-label="Scanned Data"></textarea>
+                        </div>
+                        
+                        <div class="result-meta">
+                            <span id="resultTime" class="meta-item"><i data-lucide="clock"></i> --:--</span>
+                        </div>
+                        
+                        <div class="action-grid">
+                            <button class="btn btn-action" id="copyBtn" title="Copy Content">
+                                <i data-lucide="copy"></i> Copy Text
+                            </button>
+                            <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-action btn-link" id="openLinkBtn" style="display: none;">
+                                <i data-lucide="external-link"></i> Go to URL
+                            </a>
+                            <button class="btn btn-action" id="shareBtn" title="Share content">
+                                <i data-lucide="share-2"></i> Share
+                            </button>
+                            <button class="btn btn-action" id="searchBtn" title="Search Google">
+                                <i data-lucide="search"></i> Web Search
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Product Details Card -->
+                <section class="card product-card" id="productCard" style="display: none;">
+                    <div class="card-header">
+                        <h2><i data-lucide="package"></i> Product Info (1C)</h2>
+                        <span class="badge" id="productStatus">Found</span>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="product-loading" id="productLoading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Querying 1C Database...</p>
+                    </div>
+
+                    <!-- Empty/Error State -->
+                    <div class="product-error" id="productError" style="display: none;">
+                        <i data-lucide="alert-circle" class="error-icon"></i>
+                        <p id="productErrorMessage">Product not found in 1C database.</p>
+                    </div>
+
+                    <!-- Content State -->
+                    <div class="product-info-content" id="productInfoContent" style="display: none;">
+                        <h3 class="product-title" id="prodDescription">-</h3>
+                        
+                        <div class="product-details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Article (Арт)</span>
+                                <span class="detail-value font-mono" id="prodArt">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">1C Code</span>
+                                <span class="detail-value font-mono" id="prodCode">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Price</span>
+                                <span class="detail-value price-tag" id="prodPrice">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Unit</span>
+                                <span class="detail-value" id="prodUnit">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Rests/Stock Sub-section -->
+                        <div class="rests-section">
+                            <h4><i data-lucide="warehouse"></i> Warehouse Stock</h4>
+                            <div class="rests-table-container">
+                                <table class="rests-table" id="restsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Warehouse</th>
+                                            <th>Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="prodRestsBody">
+                                        <!-- Dynamically generated rows -->
+                                    </tbody>
+                                </table>
+                                <div class="no-rests-message" id="noRestsMessage" style="display: none;">
+                                    Out of stock in all warehouses
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- History -->
+                <section class="card history-card">
+                    <div class="card-header">
+                        <h2><i data-lucide="history"></i> Scan History</h2>
+                        <div class="history-actions">
+                            <button class="btn-icon" id="clearHistoryBtn" title="Clear History">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                            <button class="btn-icon" id="exportHistoryBtn" title="Export History (CSV)">
+                                <i data-lucide="download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="history-search">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="historySearch" placeholder="Search history...">
+                    </div>
+
+                    <div class="history-list-container">
+                        <div class="history-placeholder" id="historyPlaceholder">
+                            <i data-lucide="folder-open"></i>
+                            <p>No history items yet</p>
+                        </div>
+                        <ul class="history-list" id="historyList" style="display: none;">
+                            <!-- Dynamically populated -->
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 OmniScan. Built with privacy in mind. Decoded locally.</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">
+        <i data-lucide="check-circle" class="toast-icon"></i>
+        <span class="toast-message">Copied to clipboard!</span>
+    </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+    "name": "OmniScan - Premium Barcode & QR Code Scanner",
+    "short_name": "OmniScan",
+    "description": "Premium client-side QR code and barcode scanner.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#080b11",
+    "theme_color": "#080b11",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "https://unpkg.com/lucide-static@0.331.0/icons/qr-code.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "https://unpkg.com/lucide-static@0.331.0/icons/qr-code.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
