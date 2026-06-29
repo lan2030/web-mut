@@ -842,6 +842,7 @@ button, select, label, input, textarea, a, .history-item-main {
     gap: 12px;
     transition: var(--transition-smooth);
     animation: slideIn 0.3s ease forwards;
+    min-width: 0;
 }
 
 @keyframes slideIn {
@@ -860,6 +861,7 @@ button, select, label, input, textarea, a, .history-item-main {
     gap: 4px;
     overflow: hidden;
     flex: 1;
+    min-width: 0;
 }
 
 .history-item-title {
@@ -1253,41 +1255,41 @@ button, select, label, input, textarea, a, .history-item-main {
 
 @media (max-width: 600px) {
     .app-container {
-        padding: calc(10px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left));
-        gap: 8px;
+        padding: calc(6px + env(safe-area-inset-top)) calc(6px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(6px + env(safe-area-inset-left));
+        gap: 6px;
     }
     
     .app-header {
-        padding: 10px 12px;
+        padding: 8px 10px;
     }
     
     .logo-icon {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
     }
     
     .logo-icon i {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
     }
     
     .logo-area h1 {
-        font-size: 16px;
+        font-size: 15px;
     }
     
     .subtitle {
-        font-size: 10px;
-        letter-spacing: 1px;
+        font-size: 9px;
+        letter-spacing: 0.5px;
     }
     
     .status-badge {
-        padding: 3px 6px;
-        font-size: 10px;
+        padding: 2px 5px;
+        font-size: 9px;
     }
     
     .card {
-        padding: 12px 10px;
-        gap: 12px;
+        padding: 10px 8px;
+        gap: 8px;
     }
     
     .card-header h2 {
@@ -1381,7 +1383,8 @@ button, select, label, input, textarea, a, .history-item-main {
     }
 
     .action-grid {
-        gap: 8px;
+        grid-template-columns: 1fr;
+        gap: 6px;
     }
 
     .btn-action {
@@ -1396,7 +1399,8 @@ button, select, label, input, textarea, a, .history-item-main {
     }
 
     .product-details-grid {
-        gap: 8px;
+        grid-template-columns: 1fr;
+        gap: 6px;
     }
 
     .detail-item {
@@ -1409,10 +1413,14 @@ button, select, label, input, textarea, a, .history-item-main {
 
     .detail-value {
         font-size: 12px;
+        word-break: break-all;
+        overflow-wrap: break-word;
     }
 
     .detail-value.font-mono {
         font-size: 11px;
+        word-break: break-all;
+        overflow-wrap: break-word;
     }
 
     .price-tag {
@@ -1440,7 +1448,7 @@ button, select, label, input, textarea, a, .history-item-main {
     }
 
     .history-list-container {
-        max-height: 150px;
+        max-height: 110px;
     }
 
     .history-item {
