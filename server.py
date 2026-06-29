@@ -99,10 +99,16 @@ class ProxyRequestHandler(http.server.SimpleHTTPRequestHandler):
             # Fallback to standard static file serving
             super().do_GET()
 
+# Threaded server: each request is handled in its own thread, so one slow
+# request (e.g. a hanging 1C proxy call or a kept-alive browser connection)
+# can no longer block the entire site for every other client.
+class ThreadingHTTPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    daemon_threads = True
+    allow_reuse_address = True
+
+
 def run_server():
-    # Allow address reuse to avoid "port already in use" errors on restarts
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", PORT), ProxyRequestHandler) as httpd:
+    with ThreadingHTTPServer(("", PORT), ProxyRequestHandler) as httpd:
         print(f"Proxy Server running on port {PORT}")
         print("Serving static files and proxying /api/proxy -> 1C API")
         try:

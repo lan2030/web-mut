@@ -152,9 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!html5QrCode) return;
 
         const cameraValue = cameraSelect.value;
-        // Determine whether to use faceMode object or direct device ID
-        const cameraConfig = (cameraValue === 'environment' || cameraValue === 'user') 
-            ? { facingMode: cameraValue } 
+        // Determine whether to use facingMode object or direct device ID.
+        // Empty value (e.g. select in an invalid state) falls back to the rear camera.
+        const cameraConfig = (!cameraValue || cameraValue === 'environment' || cameraValue === 'user')
+            ? { facingMode: cameraValue || 'environment' }
             : cameraValue;
 
         const config = {
@@ -185,10 +186,14 @@ document.addEventListener('DOMContentLoaded', () => {
             scannerOverlay.style.display = 'block';
             updateStatus('scanning', 'Scanning');
             
-            // Re-query cameras if we didn't have permissions/labels earlier
+            // Re-query cameras if we didn't have permissions/labels earlier.
+            // initCameraOptions() repopulates with real device IDs and auto-selects
+            // the rear camera. Do NOT overwrite that with the old facingMode value
+            // ('environment'/'user'): it isn't a valid <option> id, so the select
+            // would blank out (value="") and the next Start press would receive an
+            // empty camera id -> black screen on Android.
             if (cameraSelect.options.length <= 2) {
                 await initCameraOptions();
-                cameraSelect.value = cameraValue;
             }
         } catch (err) {
             console.error("Error starting scanner: ", err);
